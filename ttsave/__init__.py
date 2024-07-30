@@ -1,3 +1,3 @@
-from ttsave.ttsave import Video
+from ttsave.ttsave import TTSave
 
-__all__ = ["Video"]
+__all__ = ["TTSave"]
