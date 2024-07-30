@@ -35,7 +35,7 @@ TTSave упрощает процесс скачивания видео из TikT
 ## Пример использования
 
 <details>
-  <summary>Пример кода</summary>
+  <summary><h2>Пример кода</h2></summary>
 
 ```python
 import os
@@ -93,3 +93,5 @@ ttsave help
 - `download <url> <download_dir> --debug`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория. Опция `--debug` включает режим отладки.
 - `version`: Показать информацию о версии TTSave CLI.
 - `help`: Показать доступные команды.
+
+Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
