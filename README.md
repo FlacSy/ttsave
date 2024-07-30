@@ -64,7 +64,7 @@ if __name__ == "__main__":
 </details>
 
 ## CLI
-![cli]("https://github.com/FlacSy/ttsave/blob/main/local/cli.png")
+![cli](local/cli.png)
 
 TTSave также предоставляет удобный интерфейс командной строки (CLI) для скачивания видео из TikTok. 
 
