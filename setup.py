@@ -20,6 +20,7 @@ setup(
     author_email='flacsy.tw@gmail.com',
     license='MIT',
     packages=find_packages(),
+    py_modules=['ttsave_cli'],
     install_requires=install_requires(),
     entry_points={
         'console_scripts': [
