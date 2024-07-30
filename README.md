@@ -15,12 +15,13 @@ TTSave упрощает процесс скачивания видео из TikT
 
 ## Установка
 
-1. Используйте pip для установки из [PyPi]("https://pypi.org/project/ttsave/"):
+1. Используйте pip для установки из [PyPi](https://pypi.org/project/ttsave/):
 
     ```bash
     pip3 install ttsave
     ```
-2. Используйте pip для установки из [GitHub]("https://github.com/FlacSy/ttsave/")
+2. Используйте pip для установки из [GitHub](https://github.com/FlacSy/ttsave/):
+
     ```bash
     pip3 install git+https://github.com/FlacSy/ttsave
     ```
@@ -29,7 +30,7 @@ TTSave упрощает процесс скачивания видео из TikT
 - Python 3.10.0
 - Установленный Chrome браузер и ChromeDriver
 
-Библиотеки перечислины в файле [requirements.txt](./requirements.txt)
+Библиотеки перечислены в файле [requirements.txt](./requirements.txt)
 
 ## Пример использования
 
@@ -62,6 +63,33 @@ if __name__ == "__main__":
 
 </details>
 
-## Поддержка
+## CLI
+![cli]("https://github.com/FlacSy/ttsave/blob/main/local/cli.png")
 
-Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
+TTSave также предоставляет удобный интерфейс командной строки (CLI) для скачивания видео из TikTok. 
+
+### Установка
+
+CLI устанавливается вместе с библиотекой TTSave. Используйте одну из команд установки, приведенных выше.
+
+### Примеры использования CLI
+
+```bash
+# Запуск CLI
+ttsave
+
+# Скачивание видео по URL
+ttsave download <TikTok URL> <download_dir> --debug
+
+# Показать версию
+ttsave version
+
+# Показать справку
+ttsave help
+```
+
+### Команды CLI
+
+- `download <url> <download_dir> --debug`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория. Опция `--debug` включает режим отладки.
+- `version`: Показать информацию о версии TTSave CLI.
+- `help`: Показать доступные команды.
