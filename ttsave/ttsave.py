@@ -48,15 +48,20 @@ class TTSave(TTSaveABC):
             raise ValueError("URL is not provided")
         if not self.driver:
             raise ValueError("WebDriver is not initialized")
-        self.url = requests.get(self.url).url
+        
         self.debug_out(f"Normalized URL: {self.url}")
         if re.match(r"https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/video\/([0-9]+)", self.url):
             return self._download_video()
         elif re.match(r"https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/photo\/([0-9]+)", self.url):
             return self._download_photo()
         else:
-            self.debug_out("Unsupported URL")
-            raise ValueError("Unsupported URL")
+            self.url = requests.get(self.url).url
+            if re.match(r"https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/video\/([0-9]+)", self.url):
+                return self._download_video()
+            elif re.match(r"https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/photo\/([0-9]+)", self.url):
+                return self._download_photo()
+            else:                        
+                self.debug_out("Unsupported URL")
 
     def _download_video(self) -> Dict[str, Union[str, List[str]]]:
         try:

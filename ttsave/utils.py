@@ -13,4 +13,4 @@ class Utils(UtilsABC):
                   colorama.Fore.MAGENTA + message + colorama.Fore.RESET)
 
     def clear_file_name(self, file_name: str) -> str:
-        return re.sub(r'[\\/:*?"<>|]', "", file_name)
+        return re.sub(r'[\\/:*?"<>|] ',"", file_name).replace(" ", "_")
