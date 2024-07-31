@@ -216,9 +216,10 @@ class TTSave(TTSaveABC):
             music_url_element = self.driver.find_element(By.TAG_NAME, "video")
             music_url = music_url_element.get_attribute("src")
             self.debug_out(f"Music URL found: {music_url}")
-
+            self._save_content(music_url, f"{self.clear_file_name(music_author)}.mp3")
             out = {
                 "type": "music",
+                "files": [f"{self.download_dir}/{self.clear_file_name(music_author)}.mp3"],
                 "author": {
                     "url": music_author_url,
                     "name": music_author
