@@ -43,7 +43,7 @@ def download(url, download_dir, debug):
         return
 
     options = webdriver.ChromeOptions()
-    ttsave = TTSave(url, options, download_dir, debug_mode=debug)
+    ttsave = TTSave(url=url, options=options, download_dir=download_dir, debug_mode=debug, driver_class=webdriver.Chrome)
 
     try:
         result = ttsave.download()
