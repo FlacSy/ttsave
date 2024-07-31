@@ -7,10 +7,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from ttsave.utils import Utils
-from ttsave.ttsave_abc import TTSaveABC
+from ttsave.abc import TTSaveABC
+import time
 
 class TTSave(TTSaveABC):
-    def __init__(self, url: str, driver_path: str, driver_class: Type[webdriver.Chrome], options: webdriver.ChromeOptions, download_dir: str, debug_mode: bool = False):
+    def __init__(self, url: str, driver_class: Type[webdriver.Chrome], options: webdriver.ChromeOptions, download_dir: str, debug_mode: bool = False, driver_path: str = None):
         self.url: str = url
         self.download_dir: str = download_dir
         self.driver_path = driver_path
@@ -70,6 +71,8 @@ class TTSave(TTSaveABC):
             return self._download_video()
         elif re.match(r"https:\/\/www\.tiktok\.com\/@([a-zA-Z0-9_.]+)\/photo\/([0-9]+)", self.url):
             return self._download_photo()
+        elif re.match(r"https:\/\/www\.tiktok\.com\/music\/[a-zA-Z0-9-%]+-\d+", self.url):
+            return self._music()
         else:
             self.debug_out("Unsupported URL")
             return None
@@ -87,12 +90,26 @@ class TTSave(TTSaveABC):
             video_file_name: str = f"{self.clear_file_name(video_name_element.get_attribute('content'))}.mp4"
             self.debug_out(f"Video file name: {video_file_name}")
 
+            username_element = self.driver.find_element(
+                By.CLASS_NAME, "css-1c7urt-SpanUniqueId.evv7pft1")
+            self.debug_out(f"Username found: {username_element.text}")
+            username: str = username_element.text
+
+            music_uri_element = self.driver.find_element(
+                By.CLASS_NAME, "epjbyn1.css-v80f7r-StyledLink-StyledLink.er1vbsz0")
+            music_uri: str = music_uri_element.get_attribute("href")
+            self.debug_out(f"Music URL found: {music_uri}")
+            
+            self.debug_out(f"Downloading video: {video_file_name} from URL: {video_url}")
+
             self.driver.get(video_url)
             self._download_file(video_file_name)
             output: Dict[str, Union[str, List[str]]] = {
                 "type": "video",
+                "author_username": username,
                 "files": [f"{self.download_dir}/{video_file_name}"],
-                "url": self.url
+                "url": self.url,
+                "music_uri": music_uri
             }
             self.debug_out(f"Video download completed: {video_file_name}")
             return output
@@ -116,6 +133,16 @@ class TTSave(TTSaveABC):
             )
             photo_elements = self.driver.find_elements(
                 By.CLASS_NAME, "css-brxox6-ImgPhotoSlide.e10jea832")
+            
+            username_element = self.driver.find_element(
+                By.CLASS_NAME, "css-1c7urt-SpanUniqueId.evv7pft1")
+
+            username: str = username_element.text
+            self.debug_out(f"Username found: {username}")
+            music_uri_element = self.driver.find_element(
+                By.CLASS_NAME, "epjbyn1.css-v80f7r-StyledLink-StyledLink.er1vbsz0")
+            music_uri: str = music_uri_element.get_attribute("href")
+            self.debug_out(f"Music URL found: {music_uri}")
 
             files: List[str] = []
             seen_urls: set = set()
@@ -146,8 +173,10 @@ class TTSave(TTSaveABC):
             self.debug_out(f"Photo and audio download completed.")
             output: Dict[str, Union[str, List[str]]] = {
                 "type": "photo",
+                "author_username": username,
                 "files": files,
-                "url": self.url
+                "url": self.url,
+                "music_uri": music_uri
             }
             return output
 
@@ -155,6 +184,54 @@ class TTSave(TTSaveABC):
             self.debug_out(f"An error occurred while downloading photos: {str(e)}")
             return None
 
+    def _music(self) -> None:
+        try:
+            self.driver.get(self.url)
+            music_author_element = self.wait.until(
+                EC.presence_of_element_located((By.CLASS_NAME, "css-22xkqc-StyledLink.er1vbsz0"))
+            )
+            music_author = music_author_element.text
+            self.debug_out(f"Music author found: {music_author}")
+
+            music_author_url = music_author_element.get_attribute("href")
+            self.debug_out(f"Music author URL found: {music_author_url}")
+
+            music_clip_count_element = self.driver.find_element(
+                By.CSS_SELECTOR, "strong[style='font-weight: normal;']")
+            music_clip_count = int(music_clip_count_element.text.split()[0])
+            self.debug_out(f"Music clip count found: {music_clip_count}")
+            time.sleep(1)
+            music_clips_urls = self.driver.find_elements(
+                By.CLASS_NAME, "css-1wrhn5c-AMetaCaptionLine.eih2qak0")
+            music_clips_urls = [url.get_attribute("href") for url in music_clips_urls]
+            self.debug_out(f"Music clips URLs found: {len(music_clips_urls)}")
+
+            music_thumb_url_element = self.driver.find_element(
+                By.CLASS_NAME, "css-uur1tb-DivMusicCardContainer.ervjp3i1")
+            music_thumb_url = music_thumb_url_element.get_attribute("style")
+            music_thumb_url = re.search(r'url\((.*?)\)', music_thumb_url).group(1)
+            music_thumb_url = f"https:{music_thumb_url}".replace('"', '')
+            self.debug_out(f"Music thumb URL found: {music_thumb_url}")
+
+            music_url_element = self.driver.find_element(By.TAG_NAME, "video")
+            music_url = music_url_element.get_attribute("src")
+            self.debug_out(f"Music URL found: {music_url}")
+
+            out = {
+                "type": "music",
+                "author": {
+                    "url": music_author_url,
+                    "name": music_author
+                },
+                "thumb_url": music_thumb_url,
+                "clip_count": music_clip_count,
+                "clips": music_clips_urls,
+                "url": music_url
+            }            
+            return out
+        except Exception as e:
+            self.debug_out(f"An error occurred while parsing music: {str(e)}")
+        
     def _save_content(self, url: str, file_name: str) -> str:
         response = requests.get(url)
         file_path: str = f"{self.download_dir}/{self.clear_file_name(file_name)}"

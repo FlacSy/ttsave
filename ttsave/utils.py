@@ -1,6 +1,6 @@
 import re
 import colorama
-from ttsave.ttsave_abc import UtilsABC
+from ttsave.abc import UtilsABC
 
 
 class Utils(UtilsABC):

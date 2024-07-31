@@ -51,22 +51,11 @@ def main():
         url=url,
         options=options,
         driver_class=webdriver.Firefox,
-        driver_path=None,
-        download_dir=download_dir,
-        debug_mode=False
+        download_dir=download_dir
     )
-    
-    start_time = time.time() 
 
     out = downloader.download()
-    
-    end_time = time.time()
-    
-    elapsed_time = end_time - start_time
-    print(f"File(s): {out['files']}")
-    print(f"Content type: {out['type']}")
-    print(f"Content url: {out['url']}")
-    print(f"Time taken: {elapsed_time:.2f} seconds")
+    print(out)
 
 if __name__ == "__main__":
     main()
@@ -74,10 +63,13 @@ if __name__ == "__main__":
 
 </details>
 
+## Более подробный пример можно найти в **[example.py](./example.py)** 
+
 ## CLI
-![cli](local/cli.png)
 
 TTSave также предоставляет удобный интерфейс командной строки (CLI) для скачивания видео из TikTok. 
+
+![cli](local/cli.png)
 
 ### Установка
 
