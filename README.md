@@ -4,6 +4,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10.0-blue)
 ![Selenium](https://img.shields.io/badge/Selenium-4.23.1-orange)
+![License](https://img.shields.io/github/license/FlacSy/ttsave)
+![OS](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey)
 
 ## Описание
 

@@ -18,7 +18,7 @@ setup(
     url='https://github.com/FlacSy/ttsave',
     author='FlacSy',
     author_email='flacsy.tw@gmail.com',
-    license='MIT',
+    license='Apache',
     packages=find_packages(),
     py_modules=['ttsave_cli'],
     install_requires=install_requires(),

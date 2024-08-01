@@ -51,6 +51,7 @@ def download(url, download_dir, debug):
             console.print(f"Downloaded {result['type']} files:", style="bold green")
             for file in result['files']:
                 console.print(f" - {file}", style="dim")
+            ttsave._quit_driver()
         else:
             console.print("No files were downloaded.", style="yellow")
     except Exception as e:

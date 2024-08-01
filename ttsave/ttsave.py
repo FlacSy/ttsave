@@ -32,7 +32,7 @@ class TTSave(TTSaveABC):
                 "download.default_directory": self.download_dir,
             }
             options.add_experimental_option("prefs", prefs)
-        if driver_class == webdriver.Firefox:
+        elif driver_class == webdriver.Firefox:
             profile = webdriver.FirefoxProfile()
             profile.set_preference("browser.download.folderList", 2)
             profile.set_preference("browser.download.manager.showWhenStarting", False)
