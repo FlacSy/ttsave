@@ -141,6 +141,15 @@ ttsave help
         ...
     )
     ``` 
+    Еще рекомендуеться поставить дополнительные опции для скрытия автоматизированого ПО. Пример:
+    ```python
+    ...
+    options = webdriver.ChromeOptions()
+
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    ```
     2. **Firefox браузер:**
     ```python
     from selenium import webdriver
