@@ -6,7 +6,6 @@ from ttsave import TTSave
 from selenium import webdriver
 from colorama import Fore
 
-
 console = Console()
 
 intro = Fore.CYAN + r"""
@@ -32,8 +31,9 @@ def cli():
 @cli.command()
 @click.argument('url')
 @click.argument('download_dir', required=False)
+@click.option('--profile', default=None, help="Path to Chrome profile directory.")
 @click.option('--debug', is_flag=True, help="Enable debug mode.")
-def download(url, download_dir, debug):
+def download(url, download_dir, profile, debug):
     """Download TikTok video or photo from the given URL."""
     if download_dir is None:
         download_dir = os.getcwd()
@@ -43,6 +43,10 @@ def download(url, download_dir, debug):
         return
 
     options = webdriver.ChromeOptions()
+    
+    if profile:
+        options.add_argument(f"user-data-dir={profile}")
+    
     ttsave = TTSave(url=url, options=options, download_dir=download_dir, debug_mode=debug, driver_class=webdriver.Chrome)
 
     try:
@@ -68,7 +72,6 @@ def help():
     console.print("Available commands:", style="bold blue")
     console.print(" - [bold cyan]download[/bold cyan]: Download TikTok video or photo")
     console.print(" - [bold cyan]version[/bold cyan]: Show version information")
-
 
 if __name__ == "__main__":
     cli()

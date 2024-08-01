@@ -32,7 +32,7 @@ class TTSave(TTSaveABC):
                 "download.default_directory": self.download_dir,
             }
             options.add_experimental_option("prefs", prefs)
-        elif driver_class == webdriver.Firefox:
+        if driver_class == webdriver.Firefox:
             profile = webdriver.FirefoxProfile()
             profile.set_preference("browser.download.folderList", 2)
             profile.set_preference("browser.download.manager.showWhenStarting", False)
@@ -58,6 +58,12 @@ class TTSave(TTSaveABC):
         script = script.replace('video_file_name', video_file_name)
         self.driver.execute_script(script)
         self.debug_out(f"Download script executed for file: {video_file_name}")
+
+        file_path = os.path.join(self.download_dir, video_file_name)
+        while not os.path.exists(file_path):
+            time.sleep(0.5)
+        
+        self.debug_out(f"File downloaded: {file_path}")
 
     def download(self) -> Optional[Dict[str, Union[str, List[str]]]]:
         if not self.url:

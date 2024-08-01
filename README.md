@@ -100,4 +100,63 @@ ttsave help
 - `version`: Показать информацию о версии TTSave CLI.
 - `help`: Показать доступные команды.
 
-Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
+### FAQ
+
+- ### Ничего не скачивается 
+    Просто подождите и попробуйте позже. 
+
+    Если это не помогло, проверьте инструкции ниже:
+
+    Убедитесь, что все делаете по инструкции. 
+
+    Если это не помогло, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
+    
+- ### Не скачивается фото или не отображается другая информация. 
+    
+    Запустите TTSave в режиме DEBUG.
+
+    Если вы используете CLI, добавьте аргумент `--debug`.
+    Если вы используете класс TTSave, то при его создании установите параметр `debug_mode=True`.
+
+    Если вы видите капчу в окне браузера, попробуйте использовать профиль вашего браузера.
+
+    1. **Chrome браузер:**
+    ```python
+    from selenium import webdriver
+    from ttsave import TTSave
+
+    profile_path = 'C:/Users/<Ваше_Имя>/AppData/Local/Google/Chrome/User Data/Default'
+
+    options = webdriver.ChromeOptions()
+    options.add_argument(f'user-data-dir={profile_path}')
+
+    downloader = TTSave(
+        options=options,
+        driver_class=webdriver.Chrome,
+        debug_mode=True
+        ...
+    )
+    ``` 
+    2. **Firefox браузер:**
+    ```python
+    from selenium import webdriver
+    from ttsave import TTSave
+
+    profile_path = '/Users/<Ваше_Имя>/Library/Application Support/Firefox/Profiles/xxxxxx.default-release'
+
+    options = webdriver.FirefoxOptions()
+    options.set_preference('profile', profile_path)
+
+    downloader = TTSave(
+        options=options,
+        driver_class=webdriver.Firefox,
+        debug_mode=True
+        ...
+    )
+    ```     
+    Если вы используете CLI, добавьте флаг `--profile`, указав путь к вашему **Chrome** профилю:
+    ```bash
+    ttsave download https://vm.tiktok.com/qwerty --debug --profile "C:/Users/<Ваше_Имя>/AppData/Local/Google/Chrome/User Data/Default"
+    ```
+
+## Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
