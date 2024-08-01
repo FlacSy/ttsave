@@ -48,8 +48,12 @@ from ttsave import TTSave
 def main():
     url = input("TikTok URL: ")
     options = webdriver.FirefoxOptions()
+
     download_dir = os.path.dirname(os.path.abspath(__file__))
-    
+
+    # profile_path = 'C:/Users/<Ваше_Имя>/AppData/Roaming/Mozilla/Firefox/Profiles'
+    # options.set_preference('profile', profile_path)
+
     downloader = TTSave(
         url=url,
         options=options,
@@ -142,7 +146,7 @@ ttsave help
     from selenium import webdriver
     from ttsave import TTSave
 
-    profile_path = '/Users/<Ваше_Имя>/Library/Application Support/Firefox/Profiles/xxxxxx.default-release'
+    profile_path = 'C:/Users/<Ваше_Имя>/AppData/Roaming/Mozilla/Firefox/Profiles'
 
     options = webdriver.FirefoxOptions()
     options.set_preference('profile', profile_path)
