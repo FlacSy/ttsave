@@ -12,5 +12,9 @@ class Utils(UtilsABC):
             print(colorama.Fore.YELLOW + "[DEBUG] TTSave: " +
                   colorama.Fore.MAGENTA + message + colorama.Fore.RESET)
 
+    def error_out(self, message: str) -> None:
+        print(colorama.Fore.RED + "[ERROR] TTSave: " +
+              colorama.Fore.LIGHTRED_EX + message + colorama.Fore.RESET)
+
     def clear_file_name(self, file_name: str) -> str:
         return re.sub(r'[\\/:*?"<>|] ',"", file_name).replace(" ", "_")

@@ -14,5 +14,9 @@ class UtilsABC(ABC):
         pass
 
     @abstractmethod
+    def error_out(self, message: str) -> None:
+        pass
+
+    @abstractmethod
     def clear_file_name(self, file_name: str) -> str:
         pass

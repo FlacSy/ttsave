@@ -8,10 +8,46 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from ttsave.utils import Utils
 from ttsave.abc import TTSaveABC
+from ttsave.exceptions import (DriverInitializationError, DownloadError, 
+                               URLNotProvidedError, WebDriverNotInitializedError, 
+                               UnsupportedURLError, VideoDownloadError, 
+                               PhotoDownloadError, MusicDownloadError)
 import time
 
 class TTSave(TTSaveABC):
     def __init__(self, url: str, driver_class: Type[webdriver.Chrome], options: webdriver.ChromeOptions, download_dir: str, debug_mode: bool = False, driver_path: str = None):
+        """Инициализация объекта TTSave для загрузки контента из TikTok.
+
+        Args:
+            url (str): Ссылка на TikTok видео, фото или музыку.
+            driver_class (Type[webdriver.Chrome]): Класс Web Driver, который вы хотите использовать (например, Chrome или Firefox).
+            options (webdriver.ChromeOptions): Опции для Web Driver.
+            download_dir (str): Папка для загрузки контента.
+            debug_mode (bool, optional): Режим отладки. По умолчанию False. Если включен, выводится дополнительная информация для отладки.
+            driver_path (str, optional): Путь к исполняемому файлу Web Driver (например, путь к `chromedriver`). По умолчанию None. Если не указан, будет использован путь по умолчанию.
+
+        Examples:
+            >>> ttsave = TTSave(
+            >>>     url="https://www.tiktok.com/@example/video/1234567890",
+            >>>     driver_class=webdriver.Chrome,
+            >>>     options=webdriver.ChromeOptions(),
+            >>>     download_dir="/path/to/download",
+            >>>     debug_mode=True
+            >>> )
+            
+        Attributes:
+            url (str): Ссылка на TikTok контент.
+            download_dir (str): Путь к папке для загрузки файлов.
+            driver_path (str): Путь к исполняемому файлу Web Driver, если он указан.
+            debug_mode (bool): Флаг, указывающий, включен ли режим отладки.
+            driver (Optional[webdriver.Chrome]): Экземпляр Web Driver, инициализированный при создании.
+            wait (Optional[WebDriverWait]): Экземпляр WebDriverWait для ожидания элементов на странице.
+            utils (Utils): Утилиты для отладки и обработки файлов.
+
+        Raises:
+            ValueError: Если `url` не является допустимым URL.
+            FileNotFoundError: Если указанная папка для загрузки не существует.
+        """
         self.url: str = url
         self.download_dir: str = download_dir
         self.driver_path = driver_path
@@ -27,49 +63,57 @@ class TTSave(TTSaveABC):
         self.initialize_driver(driver_class, options)
 
     def initialize_driver(self, driver_class: Type[webdriver.Chrome], options: webdriver.ChromeOptions) -> None:
-        if driver_class == webdriver.Chrome:
-            prefs: Dict[str, str] = {
-                "download.default_directory": self.download_dir,
-            }
-            options.add_experimental_option("prefs", prefs)
-        if driver_class == webdriver.Firefox:
-            profile = webdriver.FirefoxProfile()
-            profile.set_preference("browser.download.folderList", 2)
-            profile.set_preference("browser.download.manager.showWhenStarting", False)
-            profile.set_preference("browser.download.dir", self.download_dir)
-            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")         
+        try:
+            if driver_class == webdriver.Chrome:
+                prefs: Dict[str, str] = {
+                    "download.default_directory": self.download_dir,
+                }
+                options.add_experimental_option("prefs", prefs)
+            if driver_class == webdriver.Firefox:
+                profile = webdriver.FirefoxProfile()
+                profile.set_preference("browser.download.folderList", 2)
+                profile.set_preference("browser.download.manager.showWhenStarting", False)
+                profile.set_preference("browser.download.dir", self.download_dir)
+                profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "video/mp4")         
 
-        if not self.debug_mode:
-            options.add_argument("--headless")
+            if not self.debug_mode:
+                options.add_argument("--headless")
+            else:
+                options.add_argument("--start-maximized")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--mute-audio")
+            options.add_argument("--disable-dev-shm-usage")
             
-        options.add_argument("--no-sandbox")
-        options.add_argument("--mute-audio")
-        options.add_argument("--disable-dev-shm-usage")
-        
-        self.driver = driver_class(options=options, service=self.driver_path)
-        self.driver.get(self.url)
-        self.wait = WebDriverWait(self.driver, 10)
-        self.debug_out("WebDriver initialized and page loaded.")
-        self.debug_out("TTSave initialized.")
+            self.driver = driver_class(options=options, service=self.driver_path)
+            self.driver.get(self.url)
+            self.wait = WebDriverWait(self.driver, 10)
+            self.debug_out("WebDriver initialized and page loaded.")
+            self.debug_out("TTSave initialized.")
+        except Exception as e:
+            raise DriverInitializationError(f"Error initializing the driver: {str(e)}")
 
     def _download_file(self, video_file_name: str) -> None:
-        with open("./ttsave/scripts/download.js", "r", encoding="utf-8") as f:
-            script: str = f.read()
-        script = script.replace('video_file_name', video_file_name)
-        self.driver.execute_script(script)
-        self.debug_out(f"Download script executed for file: {video_file_name}")
+        try:
+            with open("./ttsave/scripts/download.js", "r", encoding="utf-8") as f:
+                script: str = f.read()
+            script = script.replace('video_file_name', video_file_name)
+            self.driver.execute_script(script)
+            self.debug_out(f"Download script executed for file: {video_file_name}")
 
-        file_path = os.path.join(self.download_dir, video_file_name)
-        while not os.path.exists(file_path):
-            time.sleep(0.5)
-        
-        self.debug_out(f"File downloaded: {file_path}")
+            file_path = os.path.join(self.download_dir, video_file_name)
+            while not os.path.exists(file_path):
+                time.sleep(0.5)
+            
+            self.debug_out(f"File downloaded: {file_path}")
+        except Exception as e:
+            raise DownloadError(video_file_name, str(e))
 
     def download(self) -> Optional[Dict[str, Union[str, List[str]]]]:
+        time.sleep(15)
         if not self.url:
-            raise ValueError("URL is not provided")
+            raise URLNotProvidedError()
         if not self.driver:
-            raise ValueError("WebDriver is not initialized")
+            raise WebDriverNotInitializedError()
 
         self.debug_out(f"Normalized URL: {self.url}")
         self.url = requests.get(self.url).url
@@ -80,8 +124,7 @@ class TTSave(TTSaveABC):
         elif re.match(r"https:\/\/www\.tiktok\.com\/music\/[a-zA-Z0-9-%]+-\d+", self.url):
             return self._music()
         else:
-            self.debug_out("Unsupported URL")
-            return None
+            raise UnsupportedURLError(self.url)
 
     def _download_video(self) -> Dict[str, Union[str, List[str]]]:
         try:
@@ -121,8 +164,7 @@ class TTSave(TTSaveABC):
             return output
 
         except Exception as e:
-            self.debug_out(f"An error occurred while downloading video: {str(e)}")
-            return None
+            raise VideoDownloadError(str(e))
 
     def _download_photo(self) -> Dict[str, Union[str, List[str]]]:
         try:
@@ -187,10 +229,9 @@ class TTSave(TTSaveABC):
             return output
 
         except Exception as e:
-            self.debug_out(f"An error occurred while downloading photos: {str(e)}")
-            return None
+            raise PhotoDownloadError(str(e))
 
-    def _music(self) -> None:
+    def _music(self) -> Dict[str, Union[str, List[str]]]:
         try:
             self.driver.get(self.url)
             music_author_element = self.wait.until(
@@ -223,7 +264,7 @@ class TTSave(TTSaveABC):
             music_url = music_url_element.get_attribute("src")
             self.debug_out(f"Music URL found: {music_url}")
             self._save_content(music_url, f"{self.clear_file_name(music_author)}.mp3")
-            out = {
+            output: Dict[str, Union[str, List[str]]] = {
                 "type": "music",
                 "files": [f"{self.download_dir}/{self.clear_file_name(music_author)}.mp3"],
                 "author": {
@@ -235,20 +276,23 @@ class TTSave(TTSaveABC):
                 "clips": music_clips_urls,
                 "url": music_url
             }            
-            return out
+            return output
         except Exception as e:
-            self.debug_out(f"An error occurred while parsing music: {str(e)}")
+            raise MusicDownloadError(str(e))
         
     def _save_content(self, url: str, file_name: str) -> str:
-        response = requests.get(url)
-        file_path: str = f"{self.download_dir}/{self.clear_file_name(file_name)}"
-        if not os.path.exists(file_path):
-            with open(file_path, "wb") as f:
-                f.write(response.content)
-            self.debug_out(f"File saved: {file_path}")
-        else:
-            self.debug_out(f"File already exists: {file_path}")
-        return file_path
+        try:
+            response = requests.get(url)
+            file_path: str = f"{self.download_dir}/{self.clear_file_name(file_name)}"
+            if not os.path.exists(file_path):
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+                self.debug_out(f"File saved: {file_path}")
+            else:
+                self.debug_out(f"File already exists: {file_path}")
+            return file_path
+        except Exception as e:
+            raise DownloadError(file_name, str(e))
 
     def _quit_driver(self) -> None:
         if self.driver:
