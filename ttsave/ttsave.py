@@ -94,8 +94,31 @@ class TTSave(TTSaveABC):
 
     def _download_file(self, video_file_name: str) -> None:
         try:
-            with open("./ttsave/scripts/download.js", "r", encoding="utf-8") as f:
-                script: str = f.read()
+            script = """
+const videoElement = document.querySelector('video');
+
+if (videoElement) {
+    const sourceElement = videoElement.querySelector('source');
+
+    if (sourceElement) {
+        const videoUrl = sourceElement.src;
+
+        const link = document.createElement('a');
+        link.href = videoUrl;
+
+        link.download = 'video_file_name';
+
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+    } else {
+        console.error('Не удалось найти элемент <source> внутри элемента <video>.');
+    }
+} else {
+    console.error('Не удалось найти элемент <video> на странице.');
+}
+"""
             script = script.replace('video_file_name', video_file_name)
             self.driver.execute_script(script)
             self.debug_out(f"Download script executed for file: {video_file_name}")
