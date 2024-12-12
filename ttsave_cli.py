@@ -91,6 +91,8 @@ def help():
     console.print("Available commands:", style="bold blue")
     console.print(" - [bold cyan]download[/bold cyan]: Download TikTok video or photo")
     console.print(" - [bold cyan]version[/bold cyan]: Show version information")
+    console.print(" - [bold cyan]exit[/bold cyan]: Exit the CLI")
+    console.print(" - [bold cyan]help[/bold cyan]: Show this help message")
 
 if __name__ == "__main__":
     cli()
