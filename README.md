@@ -3,18 +3,18 @@
 ## Технологии
 
 ![Python](https://img.shields.io/badge/Python-3.10.0-blue)
-![Selenium](https://img.shields.io/badge/Selenium-4.23.1-orange)
+![Node.js](https://img.shields.io/badge/Node.js-18.0.0-green)
+
 ![License](https://img.shields.io/github/license/FlacSy/ttsave)
 ![OS](https://img.shields.io/badge/platform-windows%20%7C%20macos%20%7C%20linux-lightgrey)
 
 ## Описание
 
-TTSave упрощает процесс скачивания видео из TikTok, предоставляя удобный интерфейс для пользователей. Библиотека использует Selenium для автоматизации процесса скачивания, обеспечивая стабильность и надежность.
+TTSave упрощает процесс скачивания видео из TikTok, предоставляя удобный интерфейс для пользователей.
 
 ## Функционал TTSave
 - Скачивание видео 
 - Скачивание фото и аудио дорожки 
-- Cкачмвание музыки
 
 ## Установка
 
@@ -23,54 +23,35 @@ TTSave упрощает процесс скачивания видео из TikT
     ```bash
     pip3 install ttsave
     ```
-2. Используйте pip для установки из [GitHub](https://github.com/FlacSy/ttsave/):
+2. Используйте pip + git для установки из [GitHub](https://github.com/FlacSy/ttsave/):
 
     ```bash
     pip3 install git+https://github.com/FlacSy/ttsave
     ```
 
 ## Требования
-- Python 3.10.0
-- Установленный Chrome браузер и ChromeDriver
+- Python 3.10.0 и выше 
+- Node.js 18.0.0 и выше 
 
 Библиотеки перечислены в файле [requirements.txt](./requirements.txt)
 
 ## Пример использования
 
-<details>
-  <summary><h2>Пример кода</h2></summary>
 
 ```python
-import os
-from selenium import webdriver
+import os 
 from ttsave import TTSave
+from dotenv import load_dotenv
 
-def main():
-    url = input("TikTok URL: ")
-    options = webdriver.FirefoxOptions()
+load_dotenv()
 
-    download_dir = os.path.dirname(os.path.abspath(__file__))
+ttsave = TTSave('./downloads', os.getenv('TT_CHAIN_TOKEN'))
 
-    # profile_path = 'C:/Users/<Ваше_Имя>/AppData/Roaming/Mozilla/Firefox/Profiles'
-    # options.set_preference('profile', profile_path)
+save_info = ttsave.save('TikTok url')
 
-    downloader = TTSave(
-        url=url,
-        options=options,
-        driver_class=webdriver.Firefox,
-        download_dir=download_dir
-    )
-
-    out = downloader.download()
-    print(out)
-
-if __name__ == "__main__":
-    main()
+print(save_info)
 ```
 
-</details>
-
-## Более подробный пример можно найти в **[example.py](./example.py)** 
 
 ## CLI
 
@@ -100,76 +81,22 @@ ttsave help
 
 ### Команды CLI
 
-- `download <url> <download_dir> --debug`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория. Опция `--debug` включает режим отладки.
+- `download <url> <download_dir> <tt_chain_token>`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория, является обязательным, но после первого ввода сохраняеться как и директория `tt_chain_token` значения из cookies TikTok. Опция `--debug` включает режим отладки **на текущий момент опция недоступна**  
+
 - `version`: Показать информацию о версии TTSave CLI.
+
 - `help`: Показать доступные команды.
 
 ### FAQ
 
-- ### Ничего не скачивается 
+- #### Ничего не скачивается 
     Просто подождите и попробуйте позже. 
-
-    Если это не помогло, проверьте инструкции ниже:
+    **Также не забудте проверить ваш `tt_chain_token`!**
 
     Убедитесь, что все делаете по инструкции. 
 
     Если это не помогло, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
     
-- ### Не скачивается фото или не отображается другая информация. 
-    
-    Запустите TTSave в режиме DEBUG.
 
-    Если вы используете CLI, добавьте аргумент `--debug`.
-    Если вы используете класс TTSave, то при его создании установите параметр `debug_mode=True`.
 
-    Если вы видите капчу в окне браузера, попробуйте использовать профиль вашего браузера.
-
-    1. **Chrome браузер:**
-    ```python
-    from selenium import webdriver
-    from ttsave import TTSave
-
-    profile_path = 'C:/Users/<Ваше_Имя>/AppData/Local/Google/Chrome/User Data/Default'
-
-    options = webdriver.ChromeOptions()
-    options.add_argument(f'user-data-dir={profile_path}')
-
-    downloader = TTSave(
-        options=options,
-        driver_class=webdriver.Chrome,
-        debug_mode=True
-        ...
-    )
-    ``` 
-    Еще рекомендуеться поставить дополнительные опции для скрытия автоматизированого ПО. Пример:
-    ```python
-    ...
-    options = webdriver.ChromeOptions()
-
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-    ```
-    2. **Firefox браузер:**
-    ```python
-    from selenium import webdriver
-    from ttsave import TTSave
-
-    profile_path = 'C:/Users/<Ваше_Имя>/AppData/Roaming/Mozilla/Firefox/Profiles'
-
-    options = webdriver.FirefoxOptions()
-    options.set_preference('profile', profile_path)
-
-    downloader = TTSave(
-        options=options,
-        driver_class=webdriver.Firefox,
-        debug_mode=True
-        ...
-    )
-    ```     
-    Если вы используете CLI, добавьте флаг `--profile`, указав путь к вашему **Chrome** профилю:
-    ```bash
-    ttsave download https://vm.tiktok.com/qwerty --debug --profile "C:/Users/<Ваше_Имя>/AppData/Local/Google/Chrome/User Data/Default"
-    ```
-
-## Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).
+> Если у вас возникли вопросы или проблемы, пожалуйста, откройте issue на [GitHub](https://github.com/FlacSy/ttsave/issues).

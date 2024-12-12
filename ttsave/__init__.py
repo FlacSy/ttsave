@@ -1,3 +1,2 @@
-from ttsave.ttsave import TTSave
-
-__all__ = ["TTSave"]
+from . import lib
+TTSave = lib.TTSave 

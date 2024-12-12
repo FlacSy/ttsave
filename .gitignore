@@ -1,5 +1,14 @@
-ttsave.egg-info
+xbogus-js.js
+lib.py
+xbogus.py
+*.c
 __pycache__/
-ignore
+ttsave_cli_config.yml
+ttsave.egg-info
 build
 dist
+ignore
+venv
+.venv
+.vscode
+.env

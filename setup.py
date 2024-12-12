@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+from Cython.Build import cythonize
 from ttsave.__version__ import __version__
 
 def readme():
@@ -19,7 +20,6 @@ setup(
     author='FlacSy',
     author_email='flacsy.tw@gmail.com',
     license='Apache',
-    packages=find_packages(),
     py_modules=['ttsave_cli'],
     install_requires=install_requires(),
     entry_points={
@@ -28,4 +28,12 @@ setup(
         ],
     },
     zip_safe=False,
+    ext_modules=cythonize(
+        [
+            "ttsave/lib.py",
+            "ttsave/utils/xbogus.py"
+        ],
+        compiler_directives={"language_level": "3"},
+        annotate=False,
+    ),
 )
