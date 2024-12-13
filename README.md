@@ -41,8 +41,6 @@ TTSave упрощает процесс скачивания видео из TikT
 ```python
 from ttsave import TTSave
 
-load_dotenv()
-
 ttsave = TTSave('./downloads')
 
 save_info = ttsave.save('https://www.tiktok.com/@example/video/1234567890')
