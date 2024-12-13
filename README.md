@@ -21,7 +21,7 @@ TTSave упрощает процесс скачивания видео из TikT
 1. Используйте pip для установки из [PyPi](https://pypi.org/project/ttsave/):
 
     ```bash
-    pip3 install ttsave
+    pip3 install ttsave==2.0.0
     ```
 2. Используйте pip + git для установки из [GitHub](https://github.com/FlacSy/ttsave/):
 

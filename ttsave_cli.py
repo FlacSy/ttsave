@@ -63,7 +63,7 @@ def download(url, download_dir):
     try:
         url = requests.get(url).url
         result = ttsave.save(url)
-        config['default'] = {'download_dir': download_dir, 'tt_chain_token': tt_chain_token}
+        config['default'] = {'download_dir': download_dir}
         save_config(config)
         if result:
             console.print(f"Downloaded {result['type']} files:", style="bold green")
