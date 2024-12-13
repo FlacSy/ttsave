@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+# from Cython.Build import cythonize
 from ttsave.__version__ import __version__
 
 def readme():
@@ -19,13 +20,24 @@ setup(
     author='FlacSy',
     author_email='flacsy.tw@gmail.com',
     license='Apache',
-    packages=find_packages(),
     py_modules=['ttsave_cli'],
     install_requires=install_requires(),
+    package_data={
+        "ttsave": ["*.pyd", "utils/*.pyd", "js/xbogus-js.min.js"],
+    },
     entry_points={
         'console_scripts': [
             'ttsave=ttsave_cli:cli',
         ],
     },
+    # ext_modules=cythonize(
+    #     [
+    #         "ttsave/lib.py",
+    #         "ttsave/utils/xbogus.py"
+    #     ],
+    #     compiler_directives={"language_level": "3"},
+    #     annotate=True,
+    # ),
     zip_safe=False,
+    packages=find_packages(),
 )

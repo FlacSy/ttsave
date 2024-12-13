@@ -1,3 +1,0 @@
-default:
-  download_dir: "."
-  debug: false
