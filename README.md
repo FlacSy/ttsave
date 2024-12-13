@@ -39,15 +39,13 @@ TTSave упрощает процесс скачивания видео из TikT
 
 
 ```python
-import os 
 from ttsave import TTSave
-from dotenv import load_dotenv
 
 load_dotenv()
 
-ttsave = TTSave('./downloads', os.getenv('TT_CHAIN_TOKEN'))
+ttsave = TTSave('./downloads')
 
-save_info = ttsave.save('TikTok url')
+save_info = ttsave.save('https://www.tiktok.com/@example/video/1234567890')
 
 print(save_info)
 ```
@@ -81,10 +79,10 @@ ttsave help
 
 ### Команды CLI
 
-- `download <url> <download_dir> <tt_chain_token>`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория, является обязательным, но после первого ввода сохраняеться как и директория `tt_chain_token` значения из cookies TikTok. Опция `--debug` включает режим отладки **на текущий момент опция недоступна**  
+- `download <url> <download_dir>`: Скачивание видео или фото из TikTok по указанному URL. Параметр `download_dir` является необязательным, по умолчанию используется текущая директория, но после первого ввода сохраняеться. Опция `--debug` включает режим отладки **на текущий момент опция недоступна**  
 
 - `version`: Показать информацию о версии TTSave CLI.
-
+- `exit`: Выйти из TTSave CLI.
 - `help`: Показать доступные команды.
 
 ### FAQ

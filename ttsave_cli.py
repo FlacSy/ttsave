@@ -47,24 +47,18 @@ def cli():
 @cli.command()
 @click.argument('url')
 @click.argument('download_dir', required=False)
-@click.argument('tt_chain_token', required=False)
 # @click.option('--debug', is_flag=True, help="Enable debug mode.")
-def download(url, tt_chain_token, download_dir):
+def download(url, download_dir):
     
     if download_dir is None:
         download_dir = config.get('default', {}).get('download_dir', os.getcwd())
         
-    if tt_chain_token is None:
-        tt_chain_token = config.get('default', {}).get('tt_chain_token', None)
-        if tt_chain_token is None:
-            console.print("Please provide a tt_chain_token.", style="bold red")
-            return
         
     if not os.path.exists(download_dir):
         console.print(f"Directory does not exist: {download_dir}", style="bold red")
         return
   
-    ttsave = TTSave(download_dir, tt_chain_token)
+    ttsave = TTSave(download_dir)
 
     try:
         url = requests.get(url).url

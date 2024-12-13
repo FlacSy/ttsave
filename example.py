@@ -1,10 +1,6 @@
-import os
 import logging
 from ttsave import TTSave
-from dotenv import load_dotenv
 
-# Загрузка переменных окружения
-load_dotenv()
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -13,13 +9,7 @@ logger = logging.getLogger(__name__)
 # Инициализация TTSave
 try:
     download_path = './downloads'
-    tiktok_token = os.getenv('TT_CHAIN_TOKEN')
-    
-    if not tiktok_token:
-        raise ValueError("Переменная окружения 'TT_CHAIN_TOKEN' не задана.")
-    
-    ttsave = TTSave(download_path, tiktok_token)
-    logger.info("TTSave успешно инициализирован.")
+    ttsave = TTSave(download_path)
 except Exception as e:
     logger.error(f"Ошибка инициализации TTSave: {e}")
     exit(1)
